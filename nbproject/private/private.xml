@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/file/FileFinder.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/database/DBConnectionManager.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/file/SharedFile.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/file/FileReceiver.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/server/ConnectionHandler.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/file/FileDistributor.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/Peer.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/client/Command.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/file/FileFinder.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/client/ResultList.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/Command.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/PeerInfo.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/client/Client.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/server/ClientHandler.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/server/ResultList.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/server/Server.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/client/ClientMain.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/file/SharedFile.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/PeerListen.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/database/Database.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/peer/Message.java</file>
+            <file>file:/home/gokce/NetBeansProjects/Fish/src/server/PingHandler.java</file>
+        </group>
+    </open-files>
+</project-private>

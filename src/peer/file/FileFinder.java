@@ -14,19 +14,18 @@ import java.util.List;
  * given location.
  *
  * @author Gökçe Uludoğan
- *
-
  */
 public class FileFinder {
 
     /**
-     *Finds the files in the given location and creates SharedFile objects of them, then returns an ArrayList of these objects
+     * Finds the files in the given location and creates SharedFile objects of them, then returns an ArrayList of these objects
      */
     public FileFinder() {
     }
 
     /**
      * Finds all the files inside the specified location
+     *
      * @param location The location in which files will be searched from.
      * @return List of SharedFiles - A list of SharedFiles made by the files that
      * existed in the given directory.

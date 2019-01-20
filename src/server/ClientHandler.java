@@ -1,30 +1,30 @@
 package server;
 
+import client.ResultList;
 import database.Database;
+import file.SharedFile;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import client.ResultList;
-import java.net.URL;
-import file.SharedFile;
-import java.io.BufferedInputStream;
-import java.net.InetAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
- /**
-  * Description of ClientHandler class: Gets messages and commands from the client and responds to it depending on its type.
-  * @author Gökçe Uludoğan
-  * 
-  * 
-  */ 
+/**
+ * Description of ClientHandler class: Gets messages and commands from the client and responds to it depending on its type.
+ *
+ * @author Gökçe Uludoğan
+ */
 
 public class ClientHandler {
 
@@ -38,11 +38,11 @@ public class ClientHandler {
     private String clientName;
     private ResultList resultList;
     private boolean flag = true;
-    private ObjectOutputStream out2;
-    private BufferedInputStream in2;
+
 
     /**
      * Initializes parameters and calls ChooseAction().
+     *
      * @param clientSocket
      * @param db
      * @param conn
@@ -60,11 +60,12 @@ public class ClientHandler {
         this.out = out;
         db.prepareStatements(conn);
         ChooseAction();
-       
+
     }
 
     /**
      * Gets message from client and calls executeCommand() method with parameter depending on message type
+     *
      * @throws SQLException
      * @throws IOException
      * @throws ClassNotFoundException
@@ -75,41 +76,40 @@ public class ClientHandler {
             String message;
 
             while (!clientSocket.isClosed()) {
-                
-                while ((message = (String) in.readObject()) == null);
+
+                while ((message = (String) in.readObject()) == null) ;
                 try {
                     executeCommand(message);
                     if (!clientSocket.isClosed()) { // If the client's socket is not closed, then
                         db.getClientByName.setString(1, clientName);
                         ResultSet rs = db.getClientByName.executeQuery();
-                        int shareNo=0;
-                        while(rs.next()){
-                            shareNo=Integer.parseInt(rs.getString("SHARE"));
-                            if(shareNo==1){
+                        int shareNo = 0;
+                        while (rs.next()) {
+                            shareNo = Integer.parseInt(rs.getString("SHARE"));
+                            if (shareNo == 1) {
                                 String clientName = rs.getString("USERNAME");
-                        String IP = rs.getString("IP");
-                        String port = rs.getString("PORT");
-                        InetAddress addr = InetAddress.getByName(IP.substring(1));
-                        
-                        try {
-                          
-                             clientSocket = new Socket(addr,8888);
-                             out2 = new ObjectOutputStream(clientSocket.getOutputStream());
-                             in2 = new BufferedInputStream(clientSocket.getInputStream());
-                             //System.out.println("Connected to filedistributor");
-                             
-                             
-                        } catch (IOException ex) {
-                            Logger.getLogger(PingHandler.class.getName()).log(Level.SEVERE, null, ex);
-                            System.out.println("not available anymore "+clientName); 
-                            db.removeOnlineClient.setString(1, clientName);
-                            db.removeOnlineClient.setString(2, IP);
-                            db.removeOnlineClient.setString(3, port);
-                            db.removeOnlineClient.executeUpdate();
-                            db.removeAllFilesByClient.setString(1, clientName);
-                            db.removeAllFilesByClient.executeUpdate();
-                         }
-                                
+                                String IP = rs.getString("IP");
+                                String port = rs.getString("PORT");
+                                InetAddress addr = InetAddress.getByName(IP.substring(1));
+
+                                try {
+
+                                    clientSocket = new Socket(addr, 8888);
+                                    ObjectOutputStream out2 = new ObjectOutputStream(clientSocket.getOutputStream());
+                                    BufferedInputStream in2 = new BufferedInputStream(clientSocket.getInputStream());
+
+
+                                } catch (IOException ex) {
+                                    Logger.getLogger(PingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                                    System.out.println("not available anymore " + clientName);
+                                    db.removeOnlineClient.setString(1, clientName);
+                                    db.removeOnlineClient.setString(2, IP);
+                                    db.removeOnlineClient.setString(3, port);
+                                    db.removeOnlineClient.executeUpdate();
+                                    db.removeAllFilesByClient.setString(1, clientName);
+                                    db.removeAllFilesByClient.executeUpdate();
+                                }
+
                             }
                         }
                         ChooseAction();             // continue executing incoming commands.
@@ -117,9 +117,9 @@ public class ClientHandler {
                 } catch (SQLException ex) {
                     Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                 //removeFiles();
+                //removeFiles();
             }
-           
+
             if (flag) {
                 System.out.println("Connection with client " + clientName + " terminated!");
                 flag = false;
@@ -136,7 +136,8 @@ public class ClientHandler {
     }
 
     /**
-     *  Executes commands, updates database and send result to client
+     * Executes commands, updates database and send result to client
+     *
      * @param message
      * @throws SQLException
      * @throws IOException
@@ -159,7 +160,7 @@ public class ClientHandler {
             clientName = splittedMessage[1];
 
         } else if (splittedMessage[0].equals("SHARE")) {
-          
+
             // When a client wants to share a local folder in his computer he sends a "SHARE%"
             // Then the server requests the file list the client wants to share.
             //System.out.println("give files");
@@ -178,8 +179,8 @@ public class ClientHandler {
                 db.addFile.setString(4, clientName); // Owner of the file to be added.
                 db.addFile.executeUpdate();
             }
-            db.updateShareClients.setString(1,Integer.toString(1));
-            db.updateShareClients.setString(2,clientName);
+            db.updateShareClients.setString(1, Integer.toString(1));
+            db.updateShareClients.setString(2, clientName);
             db.updateShareClients.setString(3, clientSocket.getInetAddress().toString());
             db.updateShareClients.setString(4, Integer.toString(clientSocket.getPort()));
             db.updateShareClients.executeUpdate();
@@ -187,8 +188,8 @@ public class ClientHandler {
             sendCommand("OK");
         } else if (splittedMessage[0].equals("UNSHARE")) {
             // When a client wants to share a local folder in his computer he sends a "UNSHARE%"
-            db.updateShareClients.setString(1,Integer.toString(0));
-            db.updateShareClients.setString(2,clientName);
+            db.updateShareClients.setString(1, Integer.toString(0));
+            db.updateShareClients.setString(2, clientName);
             db.updateShareClients.setString(3, clientSocket.getInetAddress().toString());
             db.updateShareClients.setString(4, Integer.toString(clientSocket.getPort()));
             db.updateShareClients.executeUpdate();
@@ -197,7 +198,7 @@ public class ClientHandler {
             sendCommand("OK");
         } else if (splittedMessage[0].equals("LOGOUT")) {
             try {
-                
+
                 out.close();
                 in.close();
                 clientSocket.close();
@@ -216,24 +217,19 @@ public class ClientHandler {
         } else if (splittedMessage[0].equals("LIST")) {
             if (splittedMessage[1].equals("ALL")) { // In case user wants to get all available files. 
                 resultList = new ResultList(db.getAllFiles.executeQuery());
-                //System.out.println("resultlist");
                 sendCommand(resultList);
 
             } else if (splittedMessage[1].startsWith(".")) {
                 System.out.println(splittedMessage[1]);
                 db.getFilesByExtention.setString(1, splittedMessage[1].replace(".", "").toLowerCase());
                 resultList = new ResultList(db.getFilesByExtention.executeQuery());
-                 //System.out.println("resultlist");
                 sendCommand(resultList);
 
             } else {
                 System.out.println(splittedMessage[1]);
                 // In case user wants a specific name of a file.
                 db.getFilesByName.setString(1, splittedMessage[1].toLowerCase());
-                
-                
                 resultList = new ResultList(db.getFilesByName.executeQuery());
-                 //System.out.println("resultlist");
                 sendCommand(resultList);
             }
 
@@ -258,39 +254,32 @@ public class ClientHandler {
         } else if (splittedMessage[0].equals("LISTMIN")) { // In case user sets minimum size limit.
             db.getFilesByMinimumSize.setString(1, splittedMessage[1]);
             resultList = new ResultList(db.getFilesByMinimumSize.executeQuery());
-             //System.out.println("resultlist");
             sendCommand(resultList);
 
         } else if (splittedMessage[0].equals("LISTMAX")) { // In case user sets maximum size limit.
             db.getFilesByMaximumSize.setString(1, splittedMessage[1]);
             resultList = new ResultList(db.getFilesByMaximumSize.executeQuery());
-             //System.out.println("resultlist");
             sendCommand(resultList);
-            
-        } else if(splittedMessage[0].equals("SEARCH")){
-                resultList = new ResultList(db.getAllFiles.executeQuery());
-                ResultList regex=null;
-                System.out.println(resultList.size());
-                Pattern pattern = Pattern.compile(splittedMessage[1]);
-                int size = resultList.size();
-                for(int i = 0;i<resultList.size();i++){
-                    //Checks whether the filename matches with the regular expression or not
-                    //System.out.println(i);
-                    //System.out.println(splittedMessage[1]);
-                    Matcher matcher = pattern.matcher(resultList.get(i).getName());
-                    if(matcher.lookingAt()){
-                        //System.out.println(resultList.get(i).getName());
-                        
-                    }else{
-                        //System.out.println(resultList.get(i).getName());
-                        resultList.delete(i);
-                        i--;
-                    }
+
+        } else if (splittedMessage[0].equals("SEARCH")) {
+            resultList = new ResultList(db.getAllFiles.executeQuery());
+            ResultList regex = null;
+            System.out.println(resultList.size());
+            Pattern pattern = Pattern.compile(splittedMessage[1]);
+            int size = resultList.size();
+            for (int i = 0; i < resultList.size(); i++) {
+                //Checks whether the filename matches with the regular expression or not
+                Matcher matcher = pattern.matcher(resultList.get(i).getName());
+                if (matcher.lookingAt()) {
+
+                } else {
+                    resultList.delete(i);
+                    i--;
                 }
-                //System.out.println("resultlist");
-                sendCommand(resultList);
-        
-        }else { // If server receives an unknown message. 
+            }
+            sendCommand(resultList);
+
+        } else { // If server receives an unknown message.
             System.out.println("Client " + clientName + " has sent and unknown command: " + message);
         }
     }
@@ -307,17 +296,17 @@ public class ClientHandler {
     }
 
     private void removeFiles() throws SQLException {
-        if(db.getSharedClients.execute()){
-                ResultSet resultSet = db.getSharedClients.executeQuery();
-                if(resultSet != null){
-                    while (resultSet.next()) {
-                        String clientName = resultSet.getString("USERNAME");
-                        db.removeAllFilesByClient.setString(1, clientName);
-                        db.removeAllFilesByClient.executeUpdate();
-                    }
-            
-                    
+        if (db.getSharedClients.execute()) {
+            ResultSet resultSet = db.getSharedClients.executeQuery();
+            if (resultSet != null) {
+                while (resultSet.next()) {
+                    String clientName = resultSet.getString("USERNAME");
+                    db.removeAllFilesByClient.setString(1, clientName);
+                    db.removeAllFilesByClient.executeUpdate();
                 }
+
+
             }
+        }
     }
 }

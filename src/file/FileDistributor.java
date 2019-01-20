@@ -1,17 +1,10 @@
 package file;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import sun.awt.X11.XConstants;
 
 /**
  * Description of FileDistributor class:<br> This class is used to send files
@@ -22,23 +15,21 @@ import sun.awt.X11.XConstants;
  * and sends it over the socket to the remote client.
  *
  * @author Gökçe Uludoğan
- *
- * 
  */
 public class FileDistributor extends Thread {
 
+    String fileName = "";
     private ServerSocket serverSocket;
     private BufferedInputStream in;
     private ObjectOutputStream out;
     private Socket clientSocket;
     private String shared_folder;
-    String fileName = "";
 
     /**
-     * @param serverSocket The socket over which the FileDistributor will listen
-     * to requests and sent requested files.
+     * @param serverSocket  The socket over which the FileDistributor will listen
+     *                      to requests and sent requested files.
      * @param shared_folder The location in which the requested files are and
-     * will be retrieved from.
+     *                      will be retrieved from.
      * @throws java.io.IOException
      */
     public FileDistributor(ServerSocket serverSocket, String shared_folder) throws IOException {
@@ -57,12 +48,11 @@ public class FileDistributor extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(FileDistributor.class.getName()).log(Level.SEVERE, null, ex);
             }
-          
-            
-           
+
+
             try {
-                int len = (int)in.read(); 
-                
+                int len = in.read();
+
                 byte[] msg = new byte[len];
 
                 in.read(msg, 0, len);
@@ -74,12 +64,12 @@ public class FileDistributor extends Thread {
                 System.out.println(fileName);
 
                 //File myFile = new File(System.getProperty("user.dir")+"/SharedFolder/"+fileName);
-                File myFile =new File(System.getProperty("user.dir")+"/SharedFolder/"+fileName);
+                File myFile = new File(System.getProperty("user.dir") + "/SharedFolder/" + fileName);
                 //System.out.println(new File(System.getProperty("user.dir")+"/SharedFolder/file1.txt").exists());
                 //System.out.println(System.getProperty("user.dir"));
-                if(myFile.exists()){
-                     System.out.println("Accepted connection from address: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
-                
+                if (myFile.exists()) {
+                    System.out.println("Accepted connection from address: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
+
 
                     //Initialize variables:
                     long fileSize = myFile.length();
@@ -88,7 +78,7 @@ public class FileDistributor extends Thread {
 
                     //Start a fileInputStream to read bytes from the requested file.
                     FileInputStream fis = new FileInputStream(myFile);
-                    int size = (int)myFile.length();
+                    int size = (int) myFile.length();
                     // Start sending the requested file.
                     System.out.println("Start sending file: " + fileName);
                     byte[] buffer;
@@ -99,15 +89,15 @@ public class FileDistributor extends Thread {
                     out.write(size);
                     out.flush();
                     out.write(buffer);
-                        //completed += step;
+                    //completed += step;
                     //}
                     out.flush();
                     System.out.println("Sending file " + fileName + " completed successfully!");
-                }else{
+                } else {
                     //System.out.println("here");
                     //System.out.println("Break");
                 }
-    //}
+                //}
             } catch (IOException ex) {
                 Logger.getLogger(FileDistributor.class.getName()).log(Level.SEVERE, null, ex);
             }

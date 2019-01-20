@@ -1,27 +1,18 @@
 package peer;
 
-import peer.file.SharedFile;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Description: The Peer as a server
- * @version 1.0 
+ *
  * @author Gökçe Uludoğan
+ * @version 1.0
  */
 public class PeerListen extends Thread implements Serializable {
 
@@ -31,9 +22,10 @@ public class PeerListen extends Thread implements Serializable {
 
     /**
      * Starts a server socket listening to the specified port number
+     *
      * @param hostToListen Host to listen at
      * @param portToListen Port to listen at
-     * @param mypeer Instance of peer as a client
+     * @param mypeer       Instance of peer as a client
      */
     public PeerListen(String hostToListen, int portToListen, Peer mypeer) {
         this.mypeer = mypeer;
@@ -72,9 +64,10 @@ public class PeerListen extends Thread implements Serializable {
 
     /**
      * Accepts a Message object that describes the command to be executed
+     *
      * @param s Socket from which to receive the command
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private void ChooseAction(Socket s) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream(s.getInputStream());
@@ -101,7 +94,7 @@ public class PeerListen extends Thread implements Serializable {
                         /*Receive the response*/
                         ObjectInputStream in2 = new ObjectInputStream(socketToConnect.getInputStream());
                         Message msgres = (Message) in2.readObject();
-                        
+
                         if (msgres.getType().equals("SEARCHRES")) {
                             for (int j = 0; j < msgres.getSearchres().size(); j++) {
                                 returnList.add(msgres.getSearchres().get(j));
@@ -142,6 +135,7 @@ public class PeerListen extends Thread implements Serializable {
 
     /**
      * Close server socket
+     *
      * @throws java.io.IOException
      */
     public void exit() throws IOException {
@@ -151,6 +145,7 @@ public class PeerListen extends Thread implements Serializable {
 
     /**
      * Retrieves username
+     *
      * @return String with username in the format host:port
      */
     public String getUsername() {

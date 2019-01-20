@@ -5,6 +5,7 @@ import file.FileReceiver;
 import file.FileFinder;
 import file.FileDistributor;
 import client.Command.CommandName;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,8 +21,10 @@ import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  * The client part of the FISH
+ *
  * @author gokce
  */
 public class Client extends Thread {
@@ -34,15 +37,16 @@ public class Client extends Thread {
     private ResultList resultList;
     private ServerSocket serverSocket2 = null;
     private boolean flag = false;
-    private boolean share=false;
+    private boolean share = false;
 
     /**
      * Constructor of Client
-     * @param shared_folder the location of shared folder 
+     *
+     * @param shared_folder  the location of shared folder
      * @param server_address the address of the server
-     * @param server_port the port number of the server
-     * @param clientName the name of the client
-     * @throws IOException 
+     * @param server_port    the port number of the server
+     * @param clientName     the name of the client
+     * @throws IOException
      */
     public Client(String shared_folder, String server_address, int server_port, String clientName) throws IOException {
         this.shared_folder = shared_folder;
@@ -76,7 +80,7 @@ public class Client extends Thread {
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
 
         while (true) {
-            
+
             try {
                 System.out.println("You can choose to execute one of the following operations:");
                 System.out.println("list         - List shared files and choose what to download.");
@@ -116,17 +120,17 @@ public class Client extends Thread {
         String fileIP = "localhost", shared;
         String filePort = "8888";
         String fileName = "";
-       
+
         SharedFile[] sharedFiles = null;
         if (command == null) {
             return;
         }
         BufferedReader consoleIn = new BufferedReader(new InputStreamReader(System.in));
-         if(share == true){
+        if (share == true) {
             //reshare(shared_folder);
-        }       
+        }
         switch (command.getCommandName()) {
-            
+
             case list: // If user wants to see all files avaiable, or search for a specific file: 
                 System.out.println("You can define what files you are looking for. Options are:");
                 System.out.println("all          - get all available files.");
@@ -202,7 +206,7 @@ public class Client extends Thread {
                 responseString = in.readLine();
                 //responseString = responseString.replace(" ", ""); // We replace spaces given by user.
                 //responseString = responseString.toUpperCase();
-                sendCommand("SEARCH%"+responseString);
+                sendCommand("SEARCH%" + responseString);
                 try {
                     resultList = (ResultList) getResponse();
                 } catch (Exception e) {
@@ -240,7 +244,7 @@ public class Client extends Thread {
                 //Client receives the IP Address and port of the requested file:
                 try {
                     fileIP = (String) getResponse();
-                    filePort = (String )getResponse();
+                    filePort = (String) getResponse();
                     //System.out.println("fileIp "+fileIP);
                 } catch (Exception e) {
                 }
@@ -251,19 +255,17 @@ public class Client extends Thread {
                 break;
             case share:
                 sendCommand("SHARE% ");
-                String response = (String )getResponse();
+                String response = (String) getResponse();
                 System.out.println(response);
                 if ("GIVE FILES".equals(response)) {
                     // At first the client finds the files that exist into the shared folder.
-                    
+
                     System.out.println(shared_folder);
-                    
+
                     sharedFiles = FileFinder.findNow(shared_folder);
                     // Here the client sends all the files that it has into the shared folder to the server.
                     sendCommand(sharedFiles);
-                    
-                   
-                    
+
                 }
                 shared = (String) getResponse();
                 System.out.println(shared);
@@ -272,7 +274,7 @@ public class Client extends Thread {
                         openServerSocket();
                         new FileDistributor(serverSocket2, shared_folder).start();
                     }
-                    share=true;
+                    share = true;
                     System.out.println("Your files are now being shared!");
                 } else if (shared.equals("NOT OK")) { // If something has gone bad.
                     System.out.println("There was a problem putting for files online. Please try again.");
@@ -313,10 +315,9 @@ public class Client extends Thread {
                 System.out.println("The folder currently shared on Fish Server is: " + shared_folder);
                 break;
         }
-       
-        
+
+
     }
-    
 
 
     private Command parse(String userInput) {
@@ -375,7 +376,7 @@ public class Client extends Thread {
     private Object getResponse() throws ClassNotFoundException {
         Object response = null;
         try {
-            while ((response = in.readObject()) == null);
+            while ((response = in.readObject()) == null) ;
         } catch (IOException ioe) {
             System.err.println("Connection lost! Cannot read data from the server!");
             System.exit(1);

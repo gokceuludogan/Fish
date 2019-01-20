@@ -7,17 +7,17 @@ package peer;
 import java.io.Serializable;
 
 /**
- *
- * @author Gökçe Uludoğan 
+ * @author Gökçe Uludoğan
  */
-public class PeerInfo implements Serializable{
+public class PeerInfo implements Serializable {
     private int port;
     private String host;
 
     /**
      * Constructor to create PeerInfo object for a specified host and port
+     *
      * @param port
-     * @param host 
+     * @param host
      */
     public PeerInfo(int port, String host) {
         this.port = port;
@@ -26,25 +26,28 @@ public class PeerInfo implements Serializable{
 
     /**
      * Get port
+     *
      * @return int value indicating the port that this peer has
      */
     public int getPort() {
         return port;
     }
-    
+
     /**
      * Get host
+     *
      * @return String with the host name of the peer
      */
     public String getHost() {
         return host;
     }
-   
+
     /**
      * Get username
+     *
      * @return String indicating the username in the format host:port
      */
     public String getUsername() {
-        return this.host+":"+this.port;
+        return this.host + ":" + this.port;
     }
 }

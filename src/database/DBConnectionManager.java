@@ -1,12 +1,12 @@
 package database;
 
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Vector;
 
- /**
+/**
  * @author Gökçe Uludoğan
- * 
- */ 
+ */
 
 //Connection manager is responsible for creating a pool of connections
 //that can operate on a Database given.
@@ -14,14 +14,17 @@ public class DBConnectionManager {
 
     private Vector connectionPool = new Vector();
     private Database db;
+
     /**
      * Constructor with the database as a parameter. Initializes the connection pool
-     * @param db 
+     *
+     * @param db
      */
     public DBConnectionManager(Database db) {
         this.db = db;
         initializeConnectionPool();
     }
+
     /**
      * Adds new connection instance until the pool is full
      */
@@ -35,8 +38,9 @@ public class DBConnectionManager {
 
     /**
      * Creates a new Connection
+     *
      * @return new Connection
-     */ 
+     */
     private Connection createNewConnectionForPool() {
         Connection connection = null;
         try {
@@ -50,10 +54,12 @@ public class DBConnectionManager {
         }
         return connection;
     }
+
     /**
-    * Gets a Connection from the pool
-    * @return the connection 
-    */
+     * Gets a Connection from the pool
+     *
+     * @return the connection
+     */
     public synchronized Connection getConnectionFromPool() {
         Connection connection = null;
 
@@ -65,9 +71,11 @@ public class DBConnectionManager {
         //Giving away the connection from the connection pool
         return connection;
     }
+
     /**
      * Check whether the pool is full or not
-     * @return true if the pool is full 
+     *
+     * @return true if the pool is full
      */
 
     private synchronized boolean checkIfConnectionPoolIsFull() {
@@ -75,14 +83,13 @@ public class DBConnectionManager {
         //The number can change according to the needs of the application.
         final int MAX_POOL_SIZE = 5;
         //Check if the pool size
-        if (connectionPool.size() < MAX_POOL_SIZE) {
-            return false;
-        }
-        return true;
+        return connectionPool.size() >= MAX_POOL_SIZE;
     }
+
     /**
      * Adds a connection from client back to the pool
-     * @param connection 
+     *
+     * @param connection
      */
     public synchronized void returnConnectionToPool(Connection connection) {
         //Adding the connection from the client back to the connection pool

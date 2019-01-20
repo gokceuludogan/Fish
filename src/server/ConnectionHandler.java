@@ -1,6 +1,7 @@
 package server;
 
 import database.Database;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,11 +11,12 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
- /**
-  * Description of ConnectionHandler: Initializes object streams and creates ClientHandler
- * @author Gökçe Uludoğan 
- * @since 
- */ 
+/**
+ * Description of ConnectionHandler: Initializes object streams and creates ClientHandler
+ *
+ * @author Gökçe Uludoğan
+ * @since
+ */
 
 public class ConnectionHandler extends Thread {
 
@@ -26,6 +28,7 @@ public class ConnectionHandler extends Thread {
 
     /**
      * Sets up the streams and creates ClientHandler
+     *
      * @param clientSocket
      * @param db
      * @param connection

@@ -6,8 +6,6 @@ import java.io.Serializable;
  * Description of SharedFile class:<br> This class is used to represent in code
  * level the files that a client in Fish Project can share from a local folder.
  * It contains all the necessary details like name, size, extension etc.
- *
- * 
  */
 public class SharedFile implements Serializable {
 
@@ -15,8 +13,8 @@ public class SharedFile implements Serializable {
      * Description of SharedFile class:
      */
     /*
-    
-    */
+
+     */
     private int ID;
     private String fileName;
     private String extension;
@@ -24,13 +22,13 @@ public class SharedFile implements Serializable {
     private String owner;
 
     /**
-     * @param ID The unique ID of the file.
-     * @param fileName The name of the file without the extension.
+     * @param ID        The unique ID of the file.
+     * @param fileName  The name of the file without the extension.
      * @param extension The extension of the file starting with "." (if file has
-     * one ).
-     * @param size The size of the file in Bytes .
-     * @param owner The name with which the client sharing the file registered
-     * when logging into the server.
+     *                  one ).
+     * @param size      The size of the file in Bytes .
+     * @param owner     The name with which the client sharing the file registered
+     *                  when logging into the server.
      */
     public SharedFile(int ID, String fileName, String extension, long size, String owner) {
         this.ID = ID;
@@ -100,10 +98,6 @@ public class SharedFile implements Serializable {
      * @return true - If target is file. Else returns false.
      */
     public boolean isFile() {
-        if (this.getName().isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !this.getName().isEmpty();
     }
 }

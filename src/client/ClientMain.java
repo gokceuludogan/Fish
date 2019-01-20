@@ -5,17 +5,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Creates Client objects 
+ * Creates Client objects
+ *
  * @author gokce
  */
 public class ClientMain {
 
     static String shared_file_path, server_address;
     static int server_port;
+
     /**
      * Takes the server_adress, server_port and the shared_file_path as a parameter and creates the client
+     *
      * @param args
-     * @throws IOException 
+     * @throws IOException
      */
     public static void main(String[] args) throws IOException {
 

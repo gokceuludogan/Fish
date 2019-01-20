@@ -1,25 +1,14 @@
 package database;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
- /**
+/**
  * @author Gökçe Uludoğan
- * 
  * @version 1.0
- * 
  * @since
- */ 
+ */
 
 public class Database {
-
-    private String datasource;
-    private String dbms;
 
     /**
      * the prepared statement for adding online clients to db
@@ -27,7 +16,7 @@ public class Database {
     public PreparedStatement addOnlineClient,
 
     /**
-     *the prepared statement for removing online clients from db
+     * the prepared statement for removing online clients from db
      */
     removeOnlineClient,
 
@@ -40,62 +29,61 @@ public class Database {
      * the prepared statement for getting all clients
      */
     getAllClients;
-
     /**
      * the prepared statement for getting all files
      */
     public PreparedStatement getAllFiles,
 
     /**
-     *the prepared statement for getting files by name
+     * the prepared statement for getting files by name
      */
     getFilesByName,
 
     /**
-     *the prepared statement for getting files by extension
+     * the prepared statement for getting files by extension
      */
     getFilesByExtention,
 
     /**
-     *the prepared statement for getting files by owner
+     * the prepared statement for getting files by owner
      */
     getFilesByOwner;
-
     /**
-     *the prepared statement for getting files with min size
+     * the prepared statement for getting files with min size
      */
     public PreparedStatement getFilesByMinimumSize,
 
     /**
-     *the prepared statement for getting files with max size
+     * the prepared statement for getting files with max size
      */
     getFilesByMaximumSize,
 
     /**
-     *the prepared statement for adding file to db
+     * the prepared statement for adding file to db
      */
     addFile,
 
     /**
-     *the prepared statement for removing file from db
+     * the prepared statement for removing file from db
      */
     removeFile;
-
     /**
-     *the prepared statement for removing all files of a client from db
+     * the prepared statement for removing all files of a client from db
      */
     public PreparedStatement removeAllFilesByClient,
 
     /**
-     *the prepared statement for getting file by id
+     * the prepared statement for getting file by id
      */
     getFileByID;
-    
     public PreparedStatement getSharedClients;
     public PreparedStatement updateShareClients;
+    private String datasource;
+    private String dbms;
 
     /**
-     *Constructor of Database
+     * Constructor of Database
+     *
      * @param dbms
      * @param datasource
      * @param username
@@ -108,6 +96,7 @@ public class Database {
 
     /**
      * Connects to the database
+     *
      * @return Database Connection
      * @throws ClassNotFoundException
      * @throws SQLException
@@ -143,6 +132,7 @@ public class Database {
 
     /**
      * Creates DataSources, namely, the tables
+     *
      * @param connection
      * @param tableName
      * @throws ClassNotFoundException
@@ -155,8 +145,8 @@ public class Database {
         DatabaseMetaData dbm = connection.getMetaData();
         //Checks to see if the "ACCOUNT" table is already created.
         //If it exists, then does nothing and returns.
-         Statement statement = connection.createStatement();
-        for (ResultSet rs = dbm.getTables(null, null, null, null); rs.next();) {
+        Statement statement = connection.createStatement();
+        for (ResultSet rs = dbm.getTables(null, null, null, null); rs.next(); ) {
             if (rs.getString(tableNameColumn).equals(tableName)) {
                 //statement.executeUpdate("DROP TABLE " + tableName);
                 exist = true;
@@ -167,27 +157,28 @@ public class Database {
         //If it does not exist then it creates the table:
         if (!exist) {
             //Creates the new statement:
-           
+
             //And executes it:
             if (tableName.equals("ONLINE_CLIENTS")) {
-                
+
                 statement.executeUpdate("CREATE TABLE " + tableName + " (USERNAME VARCHAR(32) PRIMARY KEY, IP VARCHAR(32), PORT INTEGER, SHARE INTEGER)");
             } else if (tableName.equals("FILES")) {
-                
+
                 statement.executeUpdate("CREATE TABLE " + tableName + " (ID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),"
                         + " FILENAME VARCHAR(32)," + " EXTENSION VARCHAR(32), SIZE INTEGER, OWNER VARCHAR(32), FOREIGN KEY(OWNER) REFERENCES ONLINE_CLIENTS(USERNAME))");
-           
+
             }
         }
 
     }
 
     /**
-     *  Initializes the prepared statements
+     * Initializes the prepared statements
+     *
      * @param connection
      * @throws SQLException
      */
-        public void prepareStatements(Connection connection) throws SQLException {
+    public void prepareStatements(Connection connection) throws SQLException {
         //Statements that query on the ONLINE_CLIENTS table:
         addOnlineClient = connection.prepareStatement("INSERT INTO ONLINE_CLIENTS VALUES (?, ?, ?, ?)");
         removeOnlineClient = connection.prepareStatement("DELETE FROM ONLINE_CLIENTS WHERE USERNAME = ? AND IP = ? AND PORT = ?");
@@ -195,8 +186,7 @@ public class Database {
         getAllClients = connection.prepareStatement("SELECT * FROM ONLINE_CLIENTS");
         getSharedClients = connection.prepareStatement("SELECT * FROM ONLINE_CLIENTS WHERE SHARE = 1");
         updateShareClients = connection.prepareStatement("UPDATE ONLINE_CLIENTS SET SHARE = ? WHERE USERNAME = ? AND IP = ? AND PORT = ?");
-//Starements that query on the FILES table:
-        
+        //Statements that query on the FILES table:
         getAllFiles = connection.prepareStatement("SELECT * FROM FILES");
         getFilesByName = connection.prepareStatement("SELECT * FROM FILES WHERE FILENAME = ?");
         getFilesByExtention = connection.prepareStatement("SELECT * FROM FILES WHERE EXTENSION = ?");
@@ -207,7 +197,7 @@ public class Database {
         removeFile = connection.prepareStatement("DELETE FROM FILES WHERE FILENAME = ? AND EXTENSION = ? AND OWNER = ?");
         removeAllFilesByClient = connection.prepareStatement("DELETE FROM FILES WHERE OWNER = ?");
         getFileByID = connection.prepareStatement("SELECT * FROM FILES WHERE ID = ?");
-        }
-        
-    
+    }
+
+
 }

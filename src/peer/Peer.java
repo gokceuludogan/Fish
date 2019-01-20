@@ -4,12 +4,11 @@
  */
 package peer;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import peer.Command.CommandName;
+import peer.file.FileFinder;
+import peer.file.SharedFile;
+
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -18,38 +17,36 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import peer.Command.CommandName;
-import peer.file.FileFinder;
-import peer.file.SharedFile;
 
 /**
  * Description: The Peer as a client
- * @version 1.0 
- * 
+ *
  * @author Gökçe Uludoğan
+ * @version 1.0
  */
 public class Peer {
-    private String sharedFolder;
-    private String downloadsFolder;
-    private List<SharedFile> mysharedfiles;
-    private List<SharedFile> mydownloadfiles;
     /**
      * LinkedList of PeerInfo of the peer's neighbours
      */
     protected LinkedList<PeerInfo> neighbours;
+    private String sharedFolder;
+    private String downloadsFolder;
+    private List<SharedFile> mysharedfiles;
+    private List<SharedFile> mydownloadfiles;
     private PeerListen peerlisten;
     private String username;
-    
+
     /**
      * Peer constructor to create a Peer for a specific host, port, shared folder and downloads folder
-     * @param hostToConnect host of a known peer to connect to
-     * @param portToConnect peer of a known peer to connect to
-     * @param sharedFolder location of the folder to share
+     *
+     * @param hostToConnect   host of a known peer to connect to
+     * @param portToConnect   peer of a known peer to connect to
+     * @param sharedFolder    location of the folder to share
      * @param downloadsFolder location of the download files
      */
     public Peer(String hostToConnect, int portToConnect, String sharedFolder, String downloadsFolder) {
-       
-        this.username = new String();
+
+        this.username = "";
         this.peerlisten = null;
         this.sharedFolder = sharedFolder;
         this.downloadsFolder = downloadsFolder;
@@ -61,6 +58,7 @@ public class Peer {
 
     /**
      * Main function of the peer
+     *
      * @param args
      * @throws IOException
      * @throws ClassNotFoundException
@@ -73,14 +71,14 @@ public class Peer {
         String hostToListen = null;
         String answer = null;
         Peer mypeer;
-         
+
         //Read Host and Port of the Peer to Connect
         BufferedReader consoleIn;
         consoleIn = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Is there a known peer to connect? (Yes/No)");
         answer = consoleIn.readLine();
-        boolean noConnect=false;
-        if(answer.equalsIgnoreCase("yes")){
+        boolean noConnect = false;
+        if (answer.equalsIgnoreCase("yes")) {
             System.out.print("Host of known peer to connect:");
             hostToConnect = consoleIn.readLine();
             System.out.print("Port of known peer to connect:");
@@ -91,10 +89,10 @@ public class Peer {
                 System.out.println("Port should be number!");
                 System.exit(1);
             }
-        }else{
-            noConnect=true;
+        } else {
+            noConnect = true;
         }
-        
+
 
         //My Host And My Port inputs
         System.out.print("My Listening Host:");
@@ -110,13 +108,13 @@ public class Peer {
         //Choose Folder To Share and Download direction 
         System.out.print("Folder Location to Share:");
         String sharedF = consoleIn.readLine();
-        if(!sharedF.endsWith("/")){
-            sharedF= sharedF+"/";
+        if (!sharedF.endsWith("/")) {
+            sharedF = sharedF + "/";
         }
         System.out.print("Download Direction:");
         String downloadF = consoleIn.readLine();
-         if(!downloadF.endsWith("/")){
-            downloadF= downloadF+"/";
+        if (!downloadF.endsWith("/")) {
+            downloadF = downloadF + "/";
         }
 
         /*Create The peer*/
@@ -127,7 +125,7 @@ public class Peer {
         mypeer.peerlisten.start();
         Thread.sleep(1000);
         if (!noConnect) {
-           
+
             /*Inform Connected Peer*/
             mypeer.InformPeer(hostToConnect, portToConnect, hostToListen, portToListen);
             /*Update my neighbors*/
@@ -150,10 +148,11 @@ public class Peer {
 
     /**
      * Update Connected Peer neighbors
+     *
      * @param hostToConnect host of peer to connect to
      * @param portToConnect port of peer to connect to
-     * @param hostToListen host peer is listening
-     * @param portToListen port the peer is listening
+     * @param hostToListen  host peer is listening
+     * @param portToListen  port the peer is listening
      * @throws UnknownHostException
      * @throws IOException
      */
@@ -169,8 +168,9 @@ public class Peer {
         socketToConnect.close();
     }
 
-    /** 
+    /**
      * Generate username from host and port number
+     *
      * @param host host to generate username from
      * @param port port to generate username from
      */
@@ -180,6 +180,7 @@ public class Peer {
 
     /**
      * Add a peer to the neighbors list
+     *
      * @param host host of the new peer to be added to the list
      * @param port port of the new peer to be added to the list
      */
@@ -191,19 +192,20 @@ public class Peer {
 
     /**
      * Read command from user
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     public void ChooseAction() throws IOException {
         while (true) {
             System.out.println("You can choose to execute one of the following operations:");
-                System.out.println("search       - search for a file and download.");
-                System.out.println("mydownloadfiles      - display me downloaded files.");
-                System.out.println("mysharedfiles      - display me downloaded files.");
-                System.out.println("exit         - Logout from system.");
+            System.out.println("search       - search for a file and download.");
+            System.out.println("mydownloadfiles      - display me downloaded files.");
+            System.out.println("mysharedfiles      - display me downloaded files.");
+            System.out.println("exit         - Logout from system.");
             System.out.print(this.username + "@FISH>");
             try {
                 BufferedReader consoleIn = new BufferedReader(new InputStreamReader(System.in));
-                
+
                 String userInput = consoleIn.readLine();
 
                 execute(parse(userInput));
@@ -218,9 +220,10 @@ public class Peer {
 
     /**
      * Execute command read from user
+     *
      * @param command the command to be executed(mydownloadfiles, mysharedfiles, search, help, exit)
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     void execute(Command command) throws IOException, ClassNotFoundException {
         //This is the reader that will read the user input
@@ -268,7 +271,7 @@ public class Peer {
                     break;
                 }
                 //this.getFile(this.neighbours.get(responseInt-1), searchname);
-                this.getFile(new PeerInfo(results.get(responseInt-1).getPort(), results.get(responseInt-1).getHost()), searchname);
+                this.getFile(new PeerInfo(results.get(responseInt - 1).getPort(), results.get(responseInt - 1).getHost()), searchname);
                 break;
 
             case exit:
@@ -287,6 +290,7 @@ public class Peer {
 
     /**
      * Parse a string and return a Command object to be executed
+     *
      * @param userInput String format of the command to be executed
      * @return Command object describing the command to be executed
      */
@@ -370,8 +374,9 @@ public class Peer {
 
     /**
      * Read file name to search for from user input
+     *
      * @return String containing the user input file name
-     * @throws IOException 
+     * @throws IOException
      */
     private String searchName() throws IOException {
         BufferedReader consoleIn;
@@ -382,11 +387,12 @@ public class Peer {
 
     /**
      * Send request to neighbors to look for a file
+     *
      * @param filename String containing the filename to search for
      * @return List with the peers that have this file
      * @throws UnknownHostException
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     private List searchFile(String filename) throws UnknownHostException, IOException, ClassNotFoundException {
         LinkedList<PeerInfo> res = new LinkedList<PeerInfo>();
@@ -405,9 +411,9 @@ public class Peer {
             /*Receive the response*/
             ObjectInputStream in = new ObjectInputStream(socketToConnect.getInputStream());
             Message msgres = (Message) in.readObject();
-            
+
             if (msgres.getType().equals("SEARCHRES")) {
-                for (int j=0 ; j<msgres.getSearchres().size() ; j++) {
+                for (int j = 0; j < msgres.getSearchres().size(); j++) {
                     res.add(msgres.getSearchres().get(j));
                 }
             }
@@ -421,6 +427,7 @@ public class Peer {
 
     /**
      * Search for a specific file into my shared folder
+     *
      * @param name String containing the file name to search for
      * @return true if the file is found, false otherwise
      */
@@ -438,14 +445,15 @@ public class Peer {
 
     /**
      * Requests a file from the owning peer and places it in the downloaded folder
-     * @param from PeerInfo of the peer to get file from
+     *
+     * @param from     PeerInfo of the peer to get file from
      * @param filename String with the file name of the file to get from the peer
      * @throws UnknownHostException
-     * @throws IOException 
+     * @throws IOException
      */
     private void getFile(PeerInfo from, String filename) throws UnknownHostException, IOException {
         /*Send The request*/
-        String host[] = from.getHost().split("/");
+        String[] host = from.getHost().split("/");
         Socket socketToConnect = new Socket(host[0], from.getPort());
         ObjectOutputStream out = new ObjectOutputStream(socketToConnect.getOutputStream());
         /*Send the request*/
@@ -484,6 +492,7 @@ public class Peer {
 
     /**
      * Gets the path of the shared folder
+     *
      * @return String containing the path of the shared folder
      */
     public String getSharedFolder() {

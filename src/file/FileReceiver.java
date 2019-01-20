@@ -1,10 +1,6 @@
 package file;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -13,16 +9,14 @@ import java.net.UnknownHostException;
 /**
  * Description of FileReceiver class:<br> This class is used to receive files
  * to a given location (downloaded_folder) over a
- * given Socket. 
+ * given Socket.
  *
  * @author Gökçe Uludoğan
- *
- * 
  */
 public class FileReceiver extends Thread {
 
     /**
-     * 
+     *
      */
     private String IP, fileName;
     private int port, size;
@@ -34,7 +28,6 @@ public class FileReceiver extends Thread {
      */
 
     /**
-     *
      * @param IP
      * @param port
      * @param fileName
@@ -66,10 +59,10 @@ public class FileReceiver extends Thread {
                 System.out.println(fileName);
                 in = new ObjectInputStream(clientSocket.getInputStream());
                 out = new BufferedOutputStream(clientSocket.getOutputStream());
-                
+
                 // Initiating values:
                 long start = System.currentTimeMillis();
-                
+
                 int bytesRead = 0, counter = 0;
 
                 //Send the name of the file it will download:
@@ -83,12 +76,12 @@ public class FileReceiver extends Thread {
                 //Initialise a fileOutputStream to write the received bytes to the local disk.
                 //System.out.println("/home/gokce/NetBeansProjects/Fish/DownloadedFolder/" + fileName);
                 FileOutputStream fos = new FileOutputStream(new File("/home/gokce/NetBeansProjects/Fish/DownloadedFolder/" + fileName));
-                int size=in.read();
+                int size = in.read();
                 byte[] buffer = new byte[size];
                 //Read the file from the BufferedInputStream and write to the local file.
 
-                bytesRead=in.read(buffer);
-                fos.write(buffer,0,bytesRead);
+                bytesRead = in.read(buffer);
+                fos.write(buffer, 0, bytesRead);
                 fos.flush();
                 long end = System.currentTimeMillis();
                 System.out.println("Total Bytes read: " + size);

@@ -1,24 +1,28 @@
 package server;
 
-import database.Database;
 import database.DBConnectionManager;
+import database.Database;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 /**
  * Server part of the FISH
+ *
  * @author gokce
  */
 public class Server {
     /**
-     * Creates the database and the server 
+     * Creates the database and the server
+     *
      * @param args
      * @throws IOException
      * @throws ClassNotFoundException
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
         String dbms = "derby";
@@ -38,7 +42,7 @@ public class Server {
         Connection con = dbConnectionManager.getConnectionFromPool();
         db.createDatasource(con, "ONLINE_CLIENTS");
         db.createDatasource(con, "FILES");
-       
+
         con.close();
         System.out.println("Database created successfully.");
 
@@ -64,16 +68,16 @@ public class Server {
             //create an IP address and the server's socket to this address and port 2222
             InetAddress addr = InetAddress.getByName(host);
             ServerSocket serversocket = new ServerSocket(port, 1000, addr);
-                System.out.println("Server ready. Listening to incoming connections on " + host + ":" + port + ".");
-                Socket clientsocket = serversocket.accept();
-                new ConnectionHandler(clientsocket, db, dbConnectionManager.getConnectionFromPool()).start();
-                //System.out.println("asdfaskdf");
-                //new PingHandler(db);
+            System.out.println("Server ready. Listening to incoming connections on " + host + ":" + port + ".");
+            Socket clientsocket = serversocket.accept();
+            new ConnectionHandler(clientsocket, db, dbConnectionManager.getConnectionFromPool()).start();
+            //new PingHandler(db);
             while (true) {    // the main server's loop
                 System.out.println("Server ready. Listening to incoming connections on " + host + ":" + port + ".");
-                /*Socket*/ clientsocket = serversocket.accept();
+                /*Socket*/
+                clientsocket = serversocket.accept();
                 new ConnectionHandler(clientsocket, db, dbConnectionManager.getConnectionFromPool()).start();
-                
+
             }
         } catch (IOException e) {
             System.out.println(e);

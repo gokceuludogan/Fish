@@ -8,15 +8,14 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 /**
- *
  * @author Gökçe Uludoğan
- * 
+ * <p>
  * Type of messages
  * 1. CONNECT - HOST - PORT
  * 2. SEARCH - FILENAME - SENDER - TTL
  * 3. SEARCHRES - searchres
  */
-public class Message implements Serializable{
+public class Message implements Serializable {
     private String type;
     private String filename;
     private String host;
@@ -27,12 +26,13 @@ public class Message implements Serializable{
 
     /**
      * Message constructor to create a Message object to be transmitted over the network
-     * @param type type of message: CONNECT, SEARCH, SEARCHRES
-     * @param filename name of file to search for.
-     * @param host host of sender
-     * @param port port of sender
-     * @param sender username of sender
-     * @param ttl message time to live
+     *
+     * @param type      type of message: CONNECT, SEARCH, SEARCHRES
+     * @param filename  name of file to search for.
+     * @param host      host of sender
+     * @param port      port of sender
+     * @param sender    username of sender
+     * @param ttl       message time to live
      * @param searchres list of peers that contain the searched file
      */
     public Message(String type, String filename, String host, int port, String sender, int ttl, LinkedList<PeerInfo> searchres) {
@@ -47,6 +47,7 @@ public class Message implements Serializable{
 
     /**
      * Get type of Message object
+     *
      * @return the type of message
      */
     public String getType() {
@@ -55,6 +56,7 @@ public class Message implements Serializable{
 
     /**
      * Get filename of Message object
+     *
      * @return the filename of message
      */
     public String getFilename() {
@@ -63,6 +65,7 @@ public class Message implements Serializable{
 
     /**
      * Get host name from Message object
+     *
      * @return the host that sent the message
      */
     public String getHost() {
@@ -71,6 +74,7 @@ public class Message implements Serializable{
 
     /**
      * Get port number from Message object
+     *
      * @return the port from which the message was sent
      */
     public int getPort() {
@@ -79,6 +83,7 @@ public class Message implements Serializable{
 
     /**
      * Get sender from Message object
+     *
      * @return the sender of message
      */
     public String getSender() {
@@ -87,6 +92,7 @@ public class Message implements Serializable{
 
     /**
      * Get TTL value of Message object
+     *
      * @return current time to live of the message
      */
     public int getTtl() {
@@ -95,6 +101,7 @@ public class Message implements Serializable{
 
     /**
      * Get the list of peers that have the search file available
+     *
      * @return a list with peers that own the file searched
      */
     public LinkedList<PeerInfo> getSearchres() {
